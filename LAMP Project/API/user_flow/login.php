@@ -13,7 +13,7 @@
 	}
 	else
 	{
-		$stmt = $conn->prepare("SELECT id,firstname,lastname FROM Users WHERE email =? AND password =?");
+		$stmt = $conn->prepare("SELECT id,firstname,lastname,email FROM Users WHERE email =? AND password =?");
 		$stmt->bind_param("ss", $inData["email"], $inData["password"]);
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -44,7 +44,7 @@
 	
 	function returnWithError( $err )
 	{
-		$retValue = '{"id":0,"firstName":"","lastName":"","error":"' . $err . '"}';
+		$retValue = '{"id":0,"firstname":"","lastname":"","error":"' . $err . '"}';
 		sendResultInfoAsJson( $retValue );
 	}
 	
