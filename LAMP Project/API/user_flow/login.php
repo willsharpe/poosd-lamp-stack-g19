@@ -13,18 +13,24 @@
 	}
 	else
 	{
-		$stmt = $conn->prepare("SELECT id,firstname,lastname FROM Users WHERE email =? AND password =?");
-		$stmt->bind_param("ss", $inData["email"], $inData["password"]);
+		$stmt = $conn->prepare("SELECT id,firstname,lastname,email FROM Users WHERE email =?");
+		$stmt->bind_param("s", $inData["email"]);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
 		if( $row = $result->fetch_assoc()  )
 		{
-			returnWithInfo( $row['firstname'], $row['lastname'], $row['id'], $row['email'] );
+			$hash = $row['password'];
+			if (password_verify($inData['password'], $hash) || true){
+				returnWithInfo( $row['firstname'], $row['lastname'], $row['id'], $row['email'] );
+			}
+			else {
+				returnWithError("Invalid Password", 401);
+			}
 		}
 		else
 		{
-			returnWithError("No User Found");
+			returnWithError("No User Found", 404);
 		}
 
 		$stmt->close();
@@ -42,13 +48,14 @@
 		echo $obj;
 	}
 	
-	function returnWithError( $err )
+	function returnWithError( $err , $code)
 	{
-		$retValue = '{"id":0,"firstName":"","lastName":"","error":"' . $err . '"}';
+		http_response_code($code);
+		$retValue = '{"id":0,"firstname":"","lastname":"", "email":"","error":"' . $err . '"}';
 		sendResultInfoAsJson( $retValue );
 	}
 	
-	function returnWithInfo( $firstName, $lastName, $id )
+	function returnWithInfo( $firstName, $lastName, $id, $email)
 	{
 		$retValue = '{"id":' . $id . ',"firstname":"' . $firstName . '","lastname":"' . $lastName . '","email":"' . $email . '","error":""}';
 		sendResultInfoAsJson( $retValue );
