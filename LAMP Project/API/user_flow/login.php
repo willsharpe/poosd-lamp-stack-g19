@@ -13,7 +13,7 @@
 	}
 	else
 	{
-		$stmt = $conn->prepare("SELECT id,firstname,lastname,email FROM Users WHERE email =?");
+		$stmt = $conn->prepare("SELECT id,firstname,lastname,email,password FROM Users WHERE email =?");
 		$stmt->bind_param("s", $inData["email"]);
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -21,7 +21,7 @@
 		if( $row = $result->fetch_assoc()  )
 		{
 			$hash = $row['password'];
-			if (password_verify($inData['password'], $hash) || true){
+			if (password_verify($inData['password'], $hash)){
 				returnWithInfo( $row['firstname'], $row['lastname'], $row['id'], $row['email'] );
 			}
 			else {

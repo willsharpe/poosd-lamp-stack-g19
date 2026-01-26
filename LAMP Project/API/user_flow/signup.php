@@ -15,26 +15,27 @@
     }
 
     else{
-        $firstName = $_POST["firstName"];
-        $lastName = $_POST["lastName"];
-        $email = $_POST["email"];
-        $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+        $firstName = $inData["firstName"];
+        $lastName = $inData["lastName"];
+        $email = $inData["email"];
+        $password = password_hash($inData["password"], PASSWORD_DEFAULT);
 
 
         
-        $check = $stmt->prepare("SELECT email FROM Users WHERE email = ?");
-        $check= bind_param("s", $inData["email"]);
+        $check = $conn->prepare("SELECT email FROM Users WHERE email = ?");
+        $check->bind_param("s", $inData["email"]);
 
 
-        $result = $check->execute();
+        $check->execute();
+        $result = $check->get_result();
 
 
         if ($row = $result->fetch_assoc()){
-            returnWithError("Email already in use");
+            returnWithError("Email already in use", 409);
         }
 
         else{
-            $stmt = $conn->prepare("INSERT INTO Users (firstName, lastName, email, password) VALUES(?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO Users (firstname, lastname, email, password) VALUES(?, ?, ?, ?)");
             $stmt->bind_param("ssss", $firstName, $lastName, $email, $password);
 
 
@@ -44,8 +45,7 @@
                 returnwithInfo("Account created successfully", $firstName, $lastName, $id, $email);
             }
             else{
-                returnWithError("Account could not be created", 409);
-
+                returnWithError("Account could not be created", 400);
             }
             
         }
