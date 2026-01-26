@@ -6,7 +6,7 @@
     $lastName = "";
     $email = "";
     $passsword = "";
-    $outputMessage = "";
+   
 
     $conn = new mysqli("localhost", "lamp_G19", "WeLoveCOP4331", "ContactManager");
 
@@ -41,10 +41,10 @@
             $accountCreated = $stmt->execute();
 
             if($accountCreated){
-                $outputMessage = "Account created successfully";
+                returnwithInfo("Account created successfully", $firstName, $lastName, $id, $email);
             }
             else{
-                returnWithError("Account could not be created");
+                returnWithError("Account could not be created", 409);
 
             }
             
@@ -59,7 +59,6 @@
     }
 
 
-
     function getRequestInfo(){
         return json_decode(file_get_contents('php://input'), true);
     }
@@ -70,7 +69,14 @@
         echo $obj;
     }
 
-    function returnWithError($err){
+    function returnwithInfo($message, $firstName, $lastName, $id, $email){
+
+        $retValue = '{"id: " 0, "firstName:" '. $firstName .', "lastName:" '. $lastName .' "email: "'. $email.'}';
+        sendResultInfoAsJson( $retValue );
+    }
+
+    function returnWithError($err, $code){
+        http_response_code($code);
         $retValue = '{"error: "' . $err . '"}';
         sendResultInfoAsJson($retValue);
     }
