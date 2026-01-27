@@ -1,6 +1,7 @@
 <?php
     $inData = getRequestInfo();
 
+    $id = 0;
     $parent_id = 0;
     $firstName = "";
     $lastName = "";
@@ -13,50 +14,30 @@
 
     if ($conn -> connect_error){
         return WithError($conn->connect_error);
-    }
-
-    else{
         $parent_id = $inData["parent_id"];
         $firstName = $inData["firstname"];
         $lastName = $inData["lastname"];
         $email = $inData["email"];
         $phone = $inData["phone"];
-        $phone = $inData["company"];
-        
-        $check = $conn->prepare("SELECT email FROM Users WHERE email = ?");
-        $check->bind_param("s", $inData["email"]);
+        $company = $inData["company"];
+
+        $stmt = $conn->prepare("INSERT INTO Contacts (parent_id, firstname, lastname, email, phone, company) VALUES(?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssss", $parent_id, $firstName, $lastName, $email, $phone, $company);
 
 
-        $check->execute();
-        $result = $check->get_result();
+        $contactCreated = $stmt->execute();
 
-
-        if ($row = $result->fetch_assoc()){
-            returnWithError("Email already in use", 409);
+        if($contactCreated){
+            $id = $conn->insert_id;
+            returnwithInfo("Contact created successfully", $id);
         }
-
         else{
-            $stmt = $conn->prepare("INSERT INTO Users (firstname, lastname, email, password) VALUES(?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $firstName, $lastName, $email, $password);
-
-
-            $accountCreated = $stmt->execute();
-
-            if($accountCreated){
-                returnwithInfo("Account created successfully", $firstName, $lastName, $id, $email);
-            }
-            else{
-                returnWithError("Account could not be created", 400);
-            }
-            
+            returnWithError("Contact could not be created", 400);
         }
 
         $stmt->close();
         $check->close();
         $conn->close();
-
-
-
     }
 
 
@@ -71,8 +52,7 @@
     }
 
     function returnwithInfo($message, $firstName, $lastName, $id, $email){
-
-        $retValue = '{"id: " 0, "firstName:" '. $firstName .', "lastName:" '. $lastName .' "email: "'. $email.'}';
+        $retValue = '{"id: " '. $id .'}';
         sendResultInfoAsJson( $retValue );
     }
 
