@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up | Contact Manager</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="brand">
+        <h1>Create account</h1>
+        <p>Register to start saving contacts.</p>
+      </div>
+
+      <form id="signupForm">
+        <div class="row">
+          <div>
+            <label for="firstName">First name</label>
+            <input id="firstName" type="text" autocomplete="given-name" required />
+          </div>
+          <div>
+            <label for="lastName">Last name</label>
+            <input id="lastName" type="text" autocomplete="family-name" />
+          </div>
+        </div>
+
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" required />
+
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="new-password" required />
+
+        <label for="confirm">Confirm password</label>
+        <input id="confirm" type="password" autocomplete="new-password" required />
+
+        <div id="error" class="error"></div>
+
+        <button id="signupBtn" type="submit">Create Account</button>
+
+        <div class="helper">
+          Already have an account?
+          <a href="./login.html">Log in</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("signupForm");
+    const firstName = document.getElementById("firstName");
+    const lastName = document.getElementById("lastName");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const confirm = document.getElementById("confirm");
+    const errorBox = document.getElementById("error");
+    const btn = document.getElementById("signupBtn");
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = "block";
+    }
+    function clearError() {
+      errorBox.textContent = "";
+      errorBox.style.display = "none";
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearError();
+
+      if (password.value !== confirm.value) {
+        showError("Passwords do not match.");
+        return;
+      }
+
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/API/user_flow/signup.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firstName: firstName.value.trim(),
+            lastName: lastName.value.trim(),
+            email: email.value.trim(),
+            password: password.value
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          //Expect backend to return { error: "..." } or { message: "..." }
+          throw new Error(data?.error || data?.message || `Signup failed (${res.status})`);
+        }
+
+        //Success: send user to login page
+        window.location.href = "./login.html";
+      } catch (err) {
+        showError(err.message || "Signup failed.");
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
