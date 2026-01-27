@@ -13,7 +13,9 @@
     $conn = new mysqli("localhost", "lamp_G19", "WeLoveCOP4331", "ContactManager");
 
     if ($conn -> connect_error){
-        return WithError($conn->connect_error);
+        returnWithError($conn->connect_error);
+    }
+    else {
         $parent_id = $inData["parent_id"];
         $firstName = $inData["firstname"];
         $lastName = $inData["lastname"];
@@ -36,7 +38,6 @@
         }
 
         $stmt->close();
-        $check->close();
         $conn->close();
     }
 
@@ -51,8 +52,9 @@
         echo $obj;
     }
 
-    function returnwithInfo($message, $firstName, $lastName, $id, $email){
-        $retValue = '{"id: " '. $id .'}';
+    function returnwithInfo($message, $id){
+        http_response_code(201);
+        $retValue = '{"id":' . $id . ',"message":' . $message . '}';
         sendResultInfoAsJson( $retValue );
     }
 
