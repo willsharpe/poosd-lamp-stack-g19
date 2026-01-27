@@ -71,7 +71,7 @@
 
     function returnwithInfo($message, $firstName, $lastName, $id, $email){
 
-        $retValue = '{"id: " 0, "firstName:" '. $firstName .', "lastName:" '. $lastName .' "email: "'. $email.'}';
+        $retValue = '{"firstName": '. $firstName .', "lastName": '. $lastName .', "email":'. $email.'}';
         sendResultInfoAsJson( $retValue );
     }
 
