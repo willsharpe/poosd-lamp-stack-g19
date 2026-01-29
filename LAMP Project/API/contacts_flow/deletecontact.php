@@ -18,7 +18,7 @@
 		$result = $stmt->get_result();
         if($row = $result->fetch_assoc())
 		{
-			if ($row['parent_id'] = $parent_id){
+			if ($row['parent_id'] == $parent_id){
 				 $stmt = $conn->prepare("DELETE FROM Contacts WHERE id = ?");
                 $stmt->bind_param("i", $id);
 
