@@ -9,7 +9,7 @@
 	}
 	else
 	{
-		$stmt = $conn->prepare("SELECT firstname, lastname, phone FROM Users WHERE parent_id = ?");
+		$stmt = $conn->prepare("SELECT firstname, lastname, phone FROM Contacts WHERE parent_id = ?");
 		$stmt->bind_param("i", $inData["parent_id"]);
 		$stmt->execute();
 		$result = $stmt->get_result();
