@@ -9,7 +9,7 @@
 	$conn = new mysqli("localhost", "lamp_G19", "WeLoveCOP4331", "ContactManager"); 	
 	if( $conn->connect_error )
 	{
-		returnWithError( $conn->connect_error );
+		returnWithError($conn->connect_error, 500);
 	}
 	else
 	{
@@ -25,12 +25,12 @@
 				returnWithInfo( $row['firstname'], $row['lastname'], $row['id'], $row['email'] );
 			}
 			else {
-				returnWithError("Invalid Password", 401);
+				returnWithError("Invalid username or password", 401);
 			}
 		}
 		else
 		{
-			returnWithError("No User Found", 404);
+			returnWithError("Invalid username or password", 401);
 		}
 
 		$stmt->close();
